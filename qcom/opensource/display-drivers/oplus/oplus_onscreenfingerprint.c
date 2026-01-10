@@ -4351,6 +4351,13 @@ int oplus_ofp_touchpanel_event_notifier_call(struct notifier_block *nb, unsigned
 					/* send aod off cmds in doze mode to speed up fingerprint unlocking */
 					oplus_ofp_aod_off_set();
 				}
+			} else if (tp_event->touch_state == 0) {
+				OFP_INFO("tp touchup\n");
+				if (p_oplus_ofp_params->need_to_update_lhbm_pressed_icon_gamma_nt37707) {
+					uint32_t fp_press = 0;
+					if (oplus_ofp_notify_fp_press(&fp_press))
+						OFP_INFO("failed to notify fp up event");
+				}
 			}
 		}
 	}
@@ -5194,6 +5201,8 @@ int oplus_ofp_notify_fp_press(void *buf)
 			/* Avoid using thread to exit AOD for blind fingerprint decoding in 60hz AOD of video mode */
 			if (oplus_ofp_video_mode_aod_fod_is_enabled()) {
 				oplus_ofp_aod_off_handle(display);
+			} else {
+				oplus_ofp_aod_off_set();
 			}
 		} else {
 			oplus_ofp_aod_off_set();
